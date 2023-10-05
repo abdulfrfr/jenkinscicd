@@ -21,13 +21,17 @@ pipeline {
     post {
         failure {
             // Actions to take on pipeline failure
-            echo 'Pipeline failed!'
+            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws']]) {
+                    sh """
+                     aws sns publish --topic-arn arn:aws:sns:us-east-1:879092596042:new_topic --subject "pipeline success" --message "pipeline failed!" --region us-east-1
+                    """
+                }
         }
         success {
             // Actions to take on pipeline success
             withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws']]) {
                     sh """
-                     aws sns publish --topic-arn arn:aws:sns:us-east-1:879092596042:new_topic --subject "pipeline success" --message "pipeline successful" --region us-east-1
+                     aws sns publish --topic-arn arn:aws:sns:us-east-1:879092596042:new_topic --subject "pipeline success" --message "pipeline successful!" --region us-east-1
                     """
                 }
         }
